@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	"kvstore/pb"
-	"kvstore/store"
+	"stashr/pb"
+	"stashr/store"
 )
 
 type GRPCServer struct {

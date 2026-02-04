@@ -1,4 +1,4 @@
-module kvstore
+module stashr
 
 go 1.25.6
 

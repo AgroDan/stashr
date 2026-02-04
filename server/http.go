@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"kvstore/store"
+	"stashr/store"
 )
 
 type HTTPServer struct {

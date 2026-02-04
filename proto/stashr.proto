@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package kvstore;
+package stashr;
 
-option go_package = "kvstore/pb";
+option go_package = "stashr/pb";
 
 service KVStore {
   rpc Get(GetRequest) returns (GetResponse);

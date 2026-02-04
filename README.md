@@ -1,17 +1,17 @@
-# kvstore
+# Stashr
 
 An in-memory key/value store with TTL support, exposed via HTTP/REST and gRPC.
 
 ## Building
 
 ```bash
-go build ./cmd/kvstore
+go build ./cmd/stashr
 ```
 
 ## Running
 
 ```bash
-./kvstore
+./stashr
 ```
 
 The server starts two listeners:
@@ -56,7 +56,7 @@ Returns `{"deleted": true}` or `{"deleted": false}`.
 
 ## gRPC API
 
-The service is defined in `proto/kvstore.proto` and exposes three RPCs:
+The service is defined in `proto/stashr.proto` and exposes three RPCs:
 
 | RPC    | Request fields             | Response fields      |
 |--------|----------------------------|----------------------|
@@ -97,16 +97,16 @@ curl -X DELETE http://localhost:8080/keys/greeting
 ```bash
 # set
 grpcurl -plaintext -d '{"key":"color","value":"blue"}' \
-  localhost:9090 kvstore.KVStore/Set
+  localhost:9090 stashr.KVStore/Set
 
 # get
 grpcurl -plaintext -d '{"key":"color"}' \
-  localhost:9090 kvstore.KVStore/Get
+  localhost:9090 stashr.KVStore/Get
 # => {"value": "blue", "found": true}
 
 # delete
 grpcurl -plaintext -d '{"key":"color"}' \
-  localhost:9090 kvstore.KVStore/Delete
+  localhost:9090 stashr.KVStore/Delete
 # => {"deleted": true}
 ```
 
@@ -136,29 +136,29 @@ Install the client libraries first:
 
 ```bash
 pip install grpcio grpcio-tools
-python -m grpc_tools.protoc -Iproto --python_out=. --grpc_python_out=. proto/kvstore.proto
+python -m grpc_tools.protoc -Iproto --python_out=. --grpc_python_out=. proto/stashr.proto
 ```
 
-This generates `kvstore_pb2.py` and `kvstore_pb2_grpc.py` in the current directory.
+This generates `stashr_pb2.py` and `stashr_pb2_grpc.py` in the current directory.
 
 ```python
 import grpc
-import kvstore_pb2
-import kvstore_pb2_grpc
+import stashr_pb2
+import stashr_pb2_grpc
 
 channel = grpc.insecure_channel("localhost:9090")
-stub = kvstore_pb2_grpc.KVStoreStub(channel)
+stub = stashr_pb2_grpc.KVStoreStub(channel)
 
 # set
-stub.Set(kvstore_pb2.SetRequest(key="lang", value="python", ttl_seconds=120))
+stub.Set(stashr_pb2.SetRequest(key="lang", value="python", ttl_seconds=120))
 
 # get
-resp = stub.Get(kvstore_pb2.GetRequest(key="lang"))
+resp = stub.Get(stashr_pb2.GetRequest(key="lang"))
 if resp.found:
     print(resp.value)  # python
 
 # delete
-resp = stub.Delete(kvstore_pb2.DeleteRequest(key="lang"))
+resp = stub.Delete(stashr_pb2.DeleteRequest(key="lang"))
 print(resp.deleted)  # True
 
 channel.close()
@@ -211,7 +211,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	pb "kvstore/pb"
+	pb "stashr/pb"
 )
 
 func main() {
@@ -249,9 +249,9 @@ go test ./store/... -v
 ## Project Structure
 
 ```
-kvstore/
-├── cmd/kvstore/main.go    # entry point, starts HTTP + gRPC servers
-├── proto/kvstore.proto     # gRPC service definition
+stashr/
+├── cmd/stashr/main.go     # entry point, starts HTTP + gRPC servers
+├── proto/stashr.proto      # gRPC service definition
 ├── pb/                     # generated protobuf Go code
 ├── store/store.go          # core in-memory store with TTL
 ├── store/store_test.go     # unit tests

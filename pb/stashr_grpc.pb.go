@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.6.1
 // - protoc             v6.33.1
-// source: proto/kvstore.proto
+// source: proto/stashr.proto
 
 package pb
 
@@ -19,9 +19,9 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	KVStore_Get_FullMethodName    = "/kvstore.KVStore/Get"
-	KVStore_Set_FullMethodName    = "/kvstore.KVStore/Set"
-	KVStore_Delete_FullMethodName = "/kvstore.KVStore/Delete"
+	KVStore_Get_FullMethodName    = "/stashr.KVStore/Get"
+	KVStore_Set_FullMethodName    = "/stashr.KVStore/Set"
+	KVStore_Delete_FullMethodName = "/stashr.KVStore/Delete"
 )
 
 // KVStoreClient is the client API for KVStore service.
@@ -176,7 +176,7 @@ func _KVStore_Delete_Handler(srv interface{}, ctx context.Context, dec func(inte
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var KVStore_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "kvstore.KVStore",
+	ServiceName: "stashr.KVStore",
 	HandlerType: (*KVStoreServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -193,5 +193,5 @@ var KVStore_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "proto/kvstore.proto",
+	Metadata: "proto/stashr.proto",
 }

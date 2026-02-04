@@ -12,9 +12,9 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
-	"kvstore/pb"
-	"kvstore/server"
-	"kvstore/store"
+	"stashr/pb"
+	"stashr/server"
+	"stashr/store"
 )
 
 func main() {
