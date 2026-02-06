@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"flag"
+	"fmt"
 	"log"
 	"net"
 	"net/http"
@@ -21,9 +23,19 @@ func main() {
 	s := store.New()
 	defer s.Stop()
 
+	// By default, this application will start an HTTP server on port 8080 and a gRPC server on port 9090.
+	// However, with the appropriate flags, you can disable the HTTP server, gRPC server, or change the
+	// port to an arbitrary number.
+	httpPort := flag.Int("hport", 8080, "HTTP Port to listen on.")
+	grpcPort := flag.Int("gport", 9090, "gRPC Port to listen on.")
+	disableHttp := flag.Bool("disableHTTP", false, "Disable HTTP Service")
+	disablegRPC := flag.Bool("disableGRPC", false, "Disable gRPC Service")
+
+	flag.Parse()
+
 	// HTTP server
 	httpSrv := &http.Server{
-		Addr:    ":8080",
+		Addr:    fmt.Sprintf(":%d", *httpPort),
 		Handler: server.NewHTTPServer(s).Handler(),
 	}
 
@@ -33,24 +45,32 @@ func main() {
 	reflection.Register(grpcSrv)
 
 	// Start HTTP
-	go func() {
-		log.Println("HTTP server listening on :8080")
-		if err := httpSrv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("HTTP server error: %v", err)
-		}
-	}()
+	if !*disableHttp {
+		go func() {
+			log.Printf("HTTP server listening on :%d\n", *httpPort)
+			if err := httpSrv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+				log.Fatalf("HTTP server error: %v", err)
+			}
+		}()
+	}
 
 	// Start gRPC
-	lis, err := net.Listen("tcp", ":9090")
-	if err != nil {
-		log.Fatalf("failed to listen on :9090: %v", err)
-	}
-	go func() {
-		log.Println("gRPC server listening on :9090")
-		if err := grpcSrv.Serve(lis); err != nil {
-			log.Fatalf("gRPC server error: %v", err)
+	if !*disablegRPC {
+		lis, err := net.Listen("tcp", fmt.Sprintf(":%d", *grpcPort))
+		if err != nil {
+			log.Fatalf("failed to listen on :%d: %v", *grpcPort, err)
 		}
-	}()
+		go func() {
+			log.Printf("gRPC server listening on :%d\n", *grpcPort)
+			if err := grpcSrv.Serve(lis); err != nil {
+				log.Fatalf("gRPC server error: %v", err)
+			}
+		}()
+	}
+
+	if *disableHttp && *disablegRPC {
+		log.Fatalf("All servers disabled! What should I do?")
+	}
 
 	// Graceful shutdown
 	sigCh := make(chan os.Signal, 1)
@@ -58,6 +78,12 @@ func main() {
 	<-sigCh
 
 	log.Println("shutting down...")
-	grpcSrv.GracefulStop()
-	httpSrv.Shutdown(context.Background())
+
+	if !*disablegRPC {
+		grpcSrv.GracefulStop()
+	}
+
+	if !*disableHttp {
+		httpSrv.Shutdown(context.Background())
+	}
 }

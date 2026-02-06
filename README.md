@@ -258,3 +258,7 @@ stashr/
 ├── server/http.go          # REST handler (stdlib router)
 └── server/grpc.go          # gRPC server implementation
 ```
+
+## Dan's Note
+
+This project is shamelessly vibe-coded as a means of testing Claude. I am pretty impressed with what it was capable of doing, and after reviewing all of the code I can state that this is a pretty legitimate product. I may iterate on this as needed.
